@@ -1036,7 +1036,7 @@
             if (!checkRateLimit()) return;
 
             let data = {
-                timestamp: new Date().toISOString(),
+                timestamp: new Date().toLocaleString(),
                 type: selectedType,
                 site: 'ELP1'
             };

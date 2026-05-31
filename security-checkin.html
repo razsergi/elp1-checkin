@@ -1,0 +1,434 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELP1 Security Check-In</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px 30px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #232f3e;
+            margin-bottom: 5px;
+        }
+
+        .header .logo span {
+            color: #ff9900;
+        }
+
+        .header .site-badge {
+            display: inline-block;
+            background: #232f3e;
+            color: #ff9900;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .type-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .type-btn:hover {
+            border-color: #ff9900;
+            background: #fff8ee;
+        }
+
+        .type-btn.active {
+            border-color: #ff9900;
+            background: #ff9900;
+            color: white;
+        }
+
+        .type-btn .icon {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e8e8e8;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background: #fafafa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ff9900;
+            background: white;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff9900, #e88600);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 153, 0, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .success-msg {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .success-msg .checkmark {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .success-msg h2 {
+            color: #232f3e;
+            margin-bottom: 10px;
+        }
+
+        .success-msg p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .success-msg .reset-btn {
+            margin-top: 20px;
+            padding: 10px 25px;
+            background: #232f3e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .timestamp {
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+            margin-top: 15px;
+        }
+
+        .visitor-fields { display: none; }
+        .associate-fields { display: none; }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ff9900;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">Security <span>Check-In</span></div>
+            <div class="site-badge">ELP1</div>
+            <p>Please select your check-in type below</p>
+        </div>
+
+        <!-- Type Selection -->
+        <div class="type-selector">
+            <div class="type-btn" onclick="selectType('associate')" id="btn-associate">
+                <span class="icon">🪪</span>
+                Forgot Badge
+            </div>
+            <div class="type-btn" onclick="selectType('visitor')" id="btn-visitor">
+                <span class="icon">👤</span>
+                Visitor
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form id="checkin-form" style="display:none;">
+            <!-- Associate Fields -->
+            <div class="associate-fields" id="associate-fields">
+                <div class="form-group">
+                    <label>Amazon Login</label>
+                    <input type="text" id="login" placeholder="e.g. jsmith">
+                </div>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="assoc-name" placeholder="First and Last Name">
+                </div>
+                <div class="form-group">
+                    <label>Manager</label>
+                    <input type="text" id="manager" placeholder="Manager's login or name">
+                </div>
+                <div class="form-group">
+                    <label>Reason</label>
+                    <select id="reason">
+                        <option value="">Select reason...</option>
+                        <option value="Forgot Badge">Forgot Badge</option>
+                        <option value="Badge Not Working">Badge Not Working</option>
+                        <option value="New Hire - Awaiting Badge">New Hire - Awaiting Badge</option>
+                        <option value="Lost Badge">Lost Badge</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Visitor Fields -->
+            <div class="visitor-fields" id="visitor-fields">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="visitor-name" placeholder="First and Last Name">
+                </div>
+                <div class="form-group">
+                    <label>Company / Affiliation</label>
+                    <input type="text" id="company" placeholder="Company name or N/A">
+                </div>
+                <div class="form-group">
+                    <label>Visiting (Amazon Contact)</label>
+                    <input type="text" id="visiting" placeholder="Who are you here to see?">
+                </div>
+                <div class="form-group">
+                    <label>Purpose of Visit</label>
+                    <select id="purpose">
+                        <option value="">Select purpose...</option>
+                        <option value="Meeting">Meeting</option>
+                        <option value="Delivery">Delivery</option>
+                        <option value="Contractor Work">Contractor Work</option>
+                        <option value="Interview">Interview</option>
+                        <option value="Tour">Tour</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ID Type Presented</label>
+                    <select id="id-type">
+                        <option value="">Select ID type...</option>
+                        <option value="Driver License">Driver's License</option>
+                        <option value="State ID">State ID</option>
+                        <option value="Passport">Passport</option>
+                        <option value="Military ID">Military ID</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Check In</button>
+        </form>
+
+        <!-- Loading State -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Submitting...</p>
+        </div>
+
+        <!-- Success Message -->
+        <div class="success-msg" id="success-msg">
+            <div class="checkmark">✅</div>
+            <h2>Checked In!</h2>
+            <p id="success-detail">Security has been notified.</p>
+            <button class="reset-btn" onclick="resetForm()">New Check-In</button>
+        </div>
+
+        <div class="timestamp" id="timestamp"></div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION - REPLACE WITH YOUR GOOGLE APPS SCRIPT URL
+        // ============================================
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyOZkx_oNi2CxyK-zhJNl2P_9bZwQ4X5bn8EtAodcpF6qlZ69zhFlmh4n1lRDyz2E42/exec';
+        // ============================================
+
+        let selectedType = '';
+
+        function selectType(type) {
+            selectedType = type;
+            document.getElementById('btn-associate').classList.toggle('active', type === 'associate');
+            document.getElementById('btn-visitor').classList.toggle('active', type === 'visitor');
+            document.getElementById('associate-fields').style.display = type === 'associate' ? 'block' : 'none';
+            document.getElementById('visitor-fields').style.display = type === 'visitor' ? 'block' : 'none';
+            document.getElementById('checkin-form').style.display = 'block';
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('timestamp').textContent =
+                now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) +
+                ' \u2022 ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+        updateTimestamp();
+        setInterval(updateTimestamp, 60000);
+
+        document.getElementById('checkin-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let data = {
+                timestamp: new Date().toLocaleString(),
+                type: selectedType,
+                site: 'ELP1'
+            };
+
+            if (selectedType === 'associate') {
+                data.login = document.getElementById('login').value;
+                data.name = document.getElementById('assoc-name').value;
+                data.manager = document.getElementById('manager').value;
+                data.reason = document.getElementById('reason').value;
+
+                if (!data.login || !data.name || !data.reason) {
+                    alert('Please fill in all required fields.');
+                    return;
+                }
+            } else {
+                data.name = document.getElementById('visitor-name').value;
+                data.company = document.getElementById('company').value;
+                data.visiting = document.getElementById('visiting').value;
+                data.purpose = document.getElementById('purpose').value;
+                data.idType = document.getElementById('id-type').value;
+
+                if (!data.name || !data.purpose) {
+                    alert('Please fill in all required fields.');
+                    return;
+                }
+            }
+
+            // Show loading
+            document.getElementById('checkin-form').style.display = 'none';
+            document.querySelector('.type-selector').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+
+            // Send to Google Sheets
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('success-msg').style.display = 'block';
+                document.getElementById('success-detail').textContent =
+                    selectedType === 'associate'
+                        ? 'Please see the security guard for a temporary badge.'
+                        : 'Please wait for your escort. Security has been notified.';
+            })
+            .catch(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('success-msg').style.display = 'block';
+                document.getElementById('success-detail').textContent = 'Check-in recorded. Please see security.';
+            });
+        });
+
+        function resetForm() {
+            document.getElementById('success-msg').style.display = 'none';
+            document.querySelector('.type-selector').style.display = 'flex';
+            document.getElementById('checkin-form').style.display = 'none';
+            document.getElementById('checkin-form').reset();
+            document.getElementById('associate-fields').style.display = 'none';
+            document.getElementById('visitor-fields').style.display = 'none';
+            document.getElementById('btn-associate').classList.remove('active');
+            document.getElementById('btn-visitor').classList.remove('active');
+            selectedType = '';
+        }
+    </script>
+</body>
+</html>
+

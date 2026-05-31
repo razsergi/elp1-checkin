@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,189 +13,525 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.5s ease;
+        }
+
+        /* Light mode (default) */
+        body.light-mode {
+            background: linear-gradient(160deg, #0f2027 0%, #203a43 40%, #2c5364 100%);
+        }
+
+        /* Dark mode */
+        body.dark-mode {
+            background: linear-gradient(160deg, #0a0a0f 0%, #111827 40%, #1a1a2e 100%);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 20% 50%, rgba(255, 153, 0, 0.05) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 20%, rgba(255, 153, 0, 0.03) 0%, transparent 40%),
+                        radial-gradient(ellipse at 50% 80%, rgba(15, 48, 96, 0.1) 0%, transparent 50%);
+            animation: drift 20s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-20px, -20px) rotate(2deg); }
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 40px 30px;
-            max-width: 420px;
+            border-radius: 24px;
+            padding: 44px 36px;
+            max-width: 440px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+            transition: background 0.4s, box-shadow 0.4s;
+        }
+
+        body.light-mode .container {
+            background: rgba(255, 255, 255, 0.97);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35),
+                        0 0 0 1px rgba(255, 255, 255, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        body.dark-mode .container {
+            background: rgba(30, 30, 45, 0.97);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6),
+                        0 0 0 1px rgba(255, 255, 255, 0.05),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        /* Dark mode toggle */
+        .dark-toggle {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        body.light-mode .dark-toggle {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        body.dark-mode .dark-toggle {
+            background: #333;
+            color: #ffd54f;
+        }
+
+        .dark-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Connection status indicator */
+        .connection-status {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .connection-status.online {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+        }
+
+        .connection-status.offline {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+        }
+
+        .connection-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        .connection-status.online .connection-dot { background: #4caf50; }
+        .connection-status.offline .connection-dot { background: #f44336; }
+
+        body.dark-mode .connection-status.online {
+            background: rgba(76, 175, 80, 0.15);
+        }
+        body.dark-mode .connection-status.offline {
+            background: rgba(244, 67, 54, 0.15);
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
+        }
+
+        .header .logo-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #232f3e, #37475a);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            font-size: 26px;
+            box-shadow: 0 4px 15px rgba(35, 47, 62, 0.3);
         }
 
         .header .logo {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 800;
-            color: #232f3e;
-            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+            transition: color 0.3s;
         }
 
-        .header .logo span {
-            color: #ff9900;
-        }
+        body.light-mode .header .logo { color: #232f3e; }
+        body.dark-mode .header .logo { color: #e8e8e8; }
+
+        .header .logo span { color: #ff9900; }
 
         .header .site-badge {
-            display: inline-block;
-            background: #232f3e;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #232f3e, #37475a);
             color: #ff9900;
-            padding: 4px 12px;
+            padding: 5px 14px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-            letter-spacing: 1px;
-            margin-top: 5px;
+            letter-spacing: 1.5px;
+            margin-top: 8px;
+            text-transform: uppercase;
         }
 
         .header p {
-            color: #666;
             font-size: 14px;
-            margin-top: 10px;
+            margin-top: 12px;
+            line-height: 1.4;
+            transition: color 0.3s;
+        }
+
+        body.light-mode .header p { color: #777; }
+        body.dark-mode .header p { color: #999; }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
         }
 
         .type-selector {
             display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-bottom: 28px;
         }
 
         .type-btn {
             flex: 1;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            background: white;
+            padding: 16px 12px;
+            border: 2px solid #eaeaea;
+            border-radius: 16px;
             cursor: pointer;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-size: 13px;
             font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.light-mode .type-btn {
+            background: white;
             color: #555;
+            border-color: #eaeaea;
+        }
+
+        body.dark-mode .type-btn {
+            background: rgba(50, 50, 70, 0.8);
+            color: #ccc;
+            border-color: #444;
+        }
+
+        .type-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 153, 0, 0.1), rgba(255, 153, 0, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: 14px;
         }
 
         .type-btn:hover {
-            border-color: #ff9900;
-            background: #fff8ee;
+            border-color: #ffb84d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 153, 0, 0.12);
         }
+
+        .type-btn:hover::after { opacity: 1; }
 
         .type-btn.active {
             border-color: #ff9900;
-            background: #ff9900;
+            background: linear-gradient(135deg, #ff9900, #e88600);
             color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 153, 0, 0.35);
         }
 
+        .type-btn.active::after { opacity: 0; }
+
         .type-btn .icon {
-            font-size: 24px;
+            font-size: 28px;
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .type-btn span:last-child {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Form transition wrapper */
+        .form-wrapper {
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+            max-height: 0;
+            opacity: 0;
+        }
+
+        .form-wrapper.visible {
+            max-height: 600px;
+            opacity: 1;
         }
 
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.4s ease forwards;
+            opacity: 0;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.05s; }
+        .form-group:nth-child(2) { animation-delay: 0.1s; }
+        .form-group:nth-child(3) { animation-delay: 0.15s; }
+        .form-group:nth-child(4) { animation-delay: 0.2s; }
+        .form-group:nth-child(5) { animation-delay: 0.25s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .form-group label {
             display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: #444;
-            margin-bottom: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 7px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
+            transition: color 0.3s;
+        }
+
+        body.light-mode .form-group label { color: #555; }
+        body.dark-mode .form-group label { color: #bbb; }
+
+        .form-group label .required {
+            color: #e53935;
+            margin-left: 2px;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e8e8e8;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-            background: #fafafa;
+            padding: 13px 16px;
+            border: 2px solid #ebebeb;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.light-mode .form-group input,
+        body.light-mode .form-group select {
+            background: #f8f9fa;
+            color: #333;
+            border-color: #ebebeb;
+        }
+
+        body.dark-mode .form-group input,
+        body.dark-mode .form-group select {
+            background: rgba(40, 40, 60, 0.8);
+            color: #e0e0e0;
+            border-color: #444;
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
             border-color: #ff9900;
-            background: white;
+            box-shadow: 0 0 0 4px rgba(255, 153, 0, 0.1);
+        }
+
+        body.light-mode .form-group input:focus,
+        body.light-mode .form-group select:focus { background: white; }
+        body.dark-mode .form-group input:focus,
+        body.dark-mode .form-group select:focus { background: rgba(50, 50, 70, 1); }
+
+        .form-group input::placeholder { color: #aaa; }
+        body.dark-mode .form-group input::placeholder { color: #666; }
+
+        /* Inline validation error */
+        .form-group input.error,
+        .form-group select.error {
+            border-color: #e53935;
+            box-shadow: 0 0 0 4px rgba(229, 57, 53, 0.1);
+            animation: shake 0.4s ease;
+        }
+
+        .form-group .error-msg {
+            display: none;
+            font-size: 11px;
+            color: #e53935;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        .form-group .error-msg.visible {
+            display: block;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-4px); }
+            40% { transform: translateX(4px); }
+            60% { transform: translateX(-3px); }
+            80% { transform: translateX(3px); }
         }
 
         .submit-btn {
             width: 100%;
-            padding: 15px;
+            padding: 16px;
             background: linear-gradient(135deg, #ff9900, #e88600);
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 14px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 12px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
         }
 
         .submit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 153, 0, 0.4);
+            box-shadow: 0 10px 30px rgba(255, 153, 0, 0.4);
         }
+
+        .submit-btn:hover::before { left: 100%; }
 
         .submit-btn:active {
             transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(255, 153, 0, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .success-msg {
             display: none;
             text-align: center;
-            padding: 30px;
+            padding: 30px 10px;
         }
 
         .success-msg .checkmark {
-            font-size: 60px;
-            margin-bottom: 15px;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4caf50, #43a047);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+            color: white;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+            animation: scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .success-msg h2 {
-            color: #232f3e;
-            margin-bottom: 10px;
+            font-size: 22px;
+            margin-bottom: 8px;
         }
+
+        body.light-mode .success-msg h2 { color: #232f3e; }
+        body.dark-mode .success-msg h2 { color: #e8e8e8; }
 
         .success-msg p {
             color: #666;
             font-size: 14px;
+            line-height: 1.5;
         }
 
+        body.dark-mode .success-msg p { color: #999; }
+
         .success-msg .reset-btn {
-            margin-top: 20px;
-            padding: 10px 25px;
+            margin-top: 24px;
+            padding: 12px 28px;
             background: #232f3e;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .success-msg .reset-btn:hover {
+            background: #37475a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(35, 47, 62, 0.3);
+        }
+
+        /* Confetti canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
         }
 
         .timestamp {
             text-align: center;
             font-size: 11px;
-            color: #999;
-            margin-top: 15px;
+            margin-top: 18px;
+            font-weight: 500;
+            transition: color 0.3s;
         }
+
+        body.light-mode .timestamp { color: #aaa; }
+        body.dark-mode .timestamp { color: #666; }
 
         .visitor-fields { display: none; }
         .associate-fields { display: none; }
@@ -204,63 +539,132 @@
         .loading {
             display: none;
             text-align: center;
-            padding: 20px;
+            padding: 30px;
         }
 
         .spinner {
-            border: 3px solid #f3f3f3;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f0f0f0;
             border-top: 3px solid #ff9900;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 14px;
+        }
+
+        body.dark-mode .spinner { border-color: #333; border-top-color: #ff9900; }
+
+        .loading p {
+            color: #777;
+            font-size: 14px;
+            font-weight: 500;
         }
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .toast.visible {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: #e53935;
+            color: white;
+        }
+
+        .toast.success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .toast.warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 22px;
+                border-radius: 20px;
+            }
+
+            .type-btn { padding: 14px 10px; }
+            .header .logo { font-size: 22px; }
+        }
     </style>
 </head>
-<body>
+<body class="light-mode">
+    <canvas id="confetti-canvas"></canvas>
     <div class="container">
+        <!-- Connection Status -->
+        <div class="connection-status online" id="connection-status">
+            <div class="connection-dot"></div>
+            <span>Online</span>
+        </div>
+
+        <!-- Dark Mode Toggle -->
+        <button class="dark-toggle" onclick="toggleDarkMode()" title="Toggle dark mode">🌙</button>
+
         <div class="header">
+            <div class="logo-icon">🛡️</div>
             <div class="logo">Security <span>Check-In</span></div>
             <div class="site-badge">ELP1</div>
-            <p>Please select your check-in type below</p>
+            <p>Select your check-in type to get started</p>
         </div>
 
         <!-- Type Selection -->
-        <div class="type-selector">
+        <div class="type-selector" id="type-selector">
             <div class="type-btn" onclick="selectType('associate')" id="btn-associate">
                 <span class="icon">🪪</span>
-                Forgot Badge
+                <span>Forgot Badge</span>
             </div>
             <div class="type-btn" onclick="selectType('visitor')" id="btn-visitor">
                 <span class="icon">👤</span>
-                Visitor
+                <span>Visitor</span>
             </div>
         </div>
 
         <!-- Form -->
-        <form id="checkin-form" style="display:none;">
+        <div class="form-wrapper" id="form-wrapper">
+        <form id="checkin-form">
             <!-- Associate Fields -->
             <div class="associate-fields" id="associate-fields">
                 <div class="form-group">
-                    <label>Amazon Login</label>
-                    <input type="text" id="login" placeholder="e.g. jsmith">
+                    <label>Amazon Login <span class="required">*</span></label>
+                    <input type="text" id="login" placeholder="e.g. jsmith" autocomplete="off" maxlength="50">
+                    <div class="error-msg">Please enter your Amazon login</div>
                 </div>
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="assoc-name" placeholder="First and Last Name">
+                    <label>Full Name <span class="required">*</span></label>
+                    <input type="text" id="assoc-name" placeholder="First and Last Name" maxlength="100">
+                    <div class="error-msg">Please enter your full name</div>
                 </div>
                 <div class="form-group">
                     <label>Manager</label>
-                    <input type="text" id="manager" placeholder="Manager's login or name">
+                    <input type="text" id="manager" placeholder="Manager's login or name" maxlength="100">
                 </div>
                 <div class="form-group">
-                    <label>Reason</label>
+                    <label>Reason <span class="required">*</span></label>
                     <select id="reason">
                         <option value="">Select reason...</option>
                         <option value="Forgot Badge">Forgot Badge</option>
@@ -269,25 +673,27 @@
                         <option value="Lost Badge">Lost Badge</option>
                         <option value="Other">Other</option>
                     </select>
+                    <div class="error-msg">Please select a reason</div>
                 </div>
             </div>
 
             <!-- Visitor Fields -->
             <div class="visitor-fields" id="visitor-fields">
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="visitor-name" placeholder="First and Last Name">
+                    <label>Full Name <span class="required">*</span></label>
+                    <input type="text" id="visitor-name" placeholder="First and Last Name" maxlength="100">
+                    <div class="error-msg">Please enter your full name</div>
                 </div>
                 <div class="form-group">
                     <label>Company / Affiliation</label>
-                    <input type="text" id="company" placeholder="Company name or N/A">
+                    <input type="text" id="company" placeholder="Company name or N/A" maxlength="100">
                 </div>
                 <div class="form-group">
                     <label>Visiting (Amazon Contact)</label>
-                    <input type="text" id="visiting" placeholder="Who are you here to see?">
+                    <input type="text" id="visiting" placeholder="Who are you here to see?" maxlength="100">
                 </div>
                 <div class="form-group">
-                    <label>Purpose of Visit</label>
+                    <label>Purpose of Visit <span class="required">*</span></label>
                     <select id="purpose">
                         <option value="">Select purpose...</option>
                         <option value="Meeting">Meeting</option>
@@ -297,6 +703,7 @@
                         <option value="Tour">Tour</option>
                         <option value="Other">Other</option>
                     </select>
+                    <div class="error-msg">Please select a purpose</div>
                 </div>
                 <div class="form-group">
                     <label>ID Type Presented</label>
@@ -311,18 +718,19 @@
                 </div>
             </div>
 
-            <button type="submit" class="submit-btn">Check In</button>
+            <button type="submit" class="submit-btn" id="submit-btn">Check In</button>
         </form>
+        </div>
 
         <!-- Loading State -->
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p>Submitting...</p>
+            <p>Submitting check-in...</p>
         </div>
 
         <!-- Success Message -->
         <div class="success-msg" id="success-msg">
-            <div class="checkmark">✅</div>
+            <div class="checkmark">✓</div>
             <h2>Checked In!</h2>
             <p id="success-detail">Security has been notified.</p>
             <button class="reset-btn" onclick="resetForm()">New Check-In</button>
@@ -331,22 +739,270 @@
         <div class="timestamp" id="timestamp"></div>
     </div>
 
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
     <script>
         // ============================================
-        // CONFIGURATION - REPLACE WITH YOUR GOOGLE APPS SCRIPT URL
+        // CONFIGURATION
         // ============================================
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyOZkx_oNi2CxyK-zhJNl2P_9bZwQ4X5bn8EtAodcpF6qlZ69zhFlmh4n1lRDyz2E42/exec';
+        const RATE_LIMIT_MS = 10000; // 10 seconds between submissions
+        const MAX_SUBMISSIONS_PER_HOUR = 30;
         // ============================================
 
         let selectedType = '';
+        let lastSubmitTime = 0;
+        let submissionCount = 0;
+        let submissionHourStart = Date.now();
 
+        // ============================================
+        // DARK MODE
+        // ============================================
+        function toggleDarkMode() {
+            const body = document.body;
+            const btn = document.querySelector('.dark-toggle');
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                btn.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                btn.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme
+        (function() {
+            const saved = localStorage.getItem('theme');
+            if (saved === 'dark') {
+                document.body.classList.remove('light-mode');
+                document.body.classList.add('dark-mode');
+                document.querySelector('.dark-toggle').textContent = '☀️';
+            }
+        })();
+
+        // ============================================
+        // CONNECTION STATUS
+        // ============================================
+        function updateConnectionStatus() {
+            const el = document.getElementById('connection-status');
+            if (navigator.onLine) {
+                el.className = 'connection-status online';
+                el.innerHTML = '<div class="connection-dot"></div><span>Online</span>';
+            } else {
+                el.className = 'connection-status offline';
+                el.innerHTML = '<div class="connection-dot"></div><span>Offline</span>';
+            }
+        }
+
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+        updateConnectionStatus();
+
+        // ============================================
+        // TOAST NOTIFICATIONS
+        // ============================================
+        function showToast(message, type = 'error', duration = 3500) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type;
+            setTimeout(() => toast.classList.add('visible'), 10);
+            setTimeout(() => {
+                toast.classList.remove('visible');
+            }, duration);
+        }
+
+        // ============================================
+        // INPUT SANITIZATION
+        // ============================================
+        function sanitize(str) {
+            if (!str) return '';
+            return str
+                .replace(/[<>]/g, '') // strip angle brackets
+                .replace(/['"]/g, '') // strip quotes
+                .replace(/javascript:/gi, '') // strip js protocol
+                .replace(/on\w+=/gi, '') // strip event handlers
+                .trim()
+                .substring(0, 200); // max length
+        }
+
+        function isValidLogin(login) {
+            // Only allow alphanumeric, dots, hyphens, underscores
+            return /^[a-zA-Z0-9._-]+$/.test(login);
+        }
+
+        // ============================================
+        // RATE LIMITING
+        // ============================================
+        function checkRateLimit() {
+            const now = Date.now();
+
+            // Reset hourly counter
+            if (now - submissionHourStart > 3600000) {
+                submissionCount = 0;
+                submissionHourStart = now;
+            }
+
+            // Check per-submission cooldown
+            if (now - lastSubmitTime < RATE_LIMIT_MS) {
+                const wait = Math.ceil((RATE_LIMIT_MS - (now - lastSubmitTime)) / 1000);
+                showToast('Please wait ' + wait + ' seconds before submitting again.', 'warning');
+                return false;
+            }
+
+            // Check hourly limit
+            if (submissionCount >= MAX_SUBMISSIONS_PER_HOUR) {
+                showToast('Too many submissions. Please try again later.', 'error');
+                return false;
+            }
+
+            return true;
+        }
+
+        // ============================================
+        // OFFLINE QUEUE (localStorage)
+        // ============================================
+        function getOfflineQueue() {
+            try {
+                return JSON.parse(localStorage.getItem('checkin_queue') || '[]');
+            } catch { return []; }
+        }
+
+        function saveToOfflineQueue(data) {
+            const queue = getOfflineQueue();
+            queue.push(data);
+            localStorage.setItem('checkin_queue', JSON.stringify(queue));
+        }
+
+        function flushOfflineQueue() {
+            const queue = getOfflineQueue();
+            if (queue.length === 0) return;
+
+            localStorage.setItem('checkin_queue', '[]');
+            queue.forEach(data => {
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                }).catch(() => {
+                    // Re-queue if still offline
+                    saveToOfflineQueue(data);
+                });
+            });
+
+            if (queue.length > 0) {
+                showToast(queue.length + ' queued check-in(s) synced.', 'success');
+            }
+        }
+
+        // Flush queue when back online
+        window.addEventListener('online', flushOfflineQueue);
+
+        // ============================================
+        // CONFETTI EFFECT
+        // ============================================
+        function launchConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#ff9900', '#232f3e', '#4caf50', '#2196f3', '#ff5722', '#ffd54f'];
+
+            for (let i = 0; i < 80; i++) {
+                particles.push({
+                    x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+                    y: canvas.height / 2,
+                    vx: (Math.random() - 0.5) * 12,
+                    vy: (Math.random() - 1) * 14 - 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: Math.random() * 8 + 4,
+                    rotation: Math.random() * 360,
+                    rotSpeed: (Math.random() - 0.5) * 10,
+                    gravity: 0.3,
+                    opacity: 1
+                });
+            }
+
+            let frame = 0;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let alive = false;
+
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.vy += p.gravity;
+                    p.y += p.vy;
+                    p.rotation += p.rotSpeed;
+                    p.opacity -= 0.012;
+
+                    if (p.opacity > 0) {
+                        alive = true;
+                        ctx.save();
+                        ctx.translate(p.x, p.y);
+                        ctx.rotate(p.rotation * Math.PI / 180);
+                        ctx.globalAlpha = p.opacity;
+                        ctx.fillStyle = p.color;
+                        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+                        ctx.restore();
+                    }
+                });
+
+                frame++;
+                if (alive && frame < 120) {
+                    requestAnimationFrame(animate);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            animate();
+        }
+
+        // ============================================
+        // FORM LOGIC
+        // ============================================
         function selectType(type) {
             selectedType = type;
             document.getElementById('btn-associate').classList.toggle('active', type === 'associate');
             document.getElementById('btn-visitor').classList.toggle('active', type === 'visitor');
             document.getElementById('associate-fields').style.display = type === 'associate' ? 'block' : 'none';
             document.getElementById('visitor-fields').style.display = type === 'visitor' ? 'block' : 'none';
-            document.getElementById('checkin-form').style.display = 'block';
+
+            // Show form with transition
+            const wrapper = document.getElementById('form-wrapper');
+            wrapper.classList.add('visible');
+
+            // Re-trigger form field animations
+            const fields = document.querySelectorAll('#' + type + '-fields .form-group');
+            fields.forEach(function(field) {
+                field.style.animation = 'none';
+                field.offsetHeight;
+                field.style.animation = '';
+            });
+
+            // Clear any previous errors
+            clearErrors();
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.form-group input, .form-group select').forEach(function(el) {
+                el.classList.remove('error');
+            });
+            document.querySelectorAll('.error-msg').forEach(function(el) {
+                el.classList.remove('visible');
+            });
+        }
+
+        function showFieldError(input) {
+            input.classList.add('error');
+            const msg = input.parentElement.querySelector('.error-msg');
+            if (msg) msg.classList.add('visible');
         }
 
         function updateTimestamp() {
@@ -358,42 +1014,99 @@
         updateTimestamp();
         setInterval(updateTimestamp, 60000);
 
+        // Clear error on input
+        document.querySelectorAll('.form-group input, .form-group select').forEach(function(el) {
+            el.addEventListener('input', function() {
+                this.classList.remove('error');
+                var msg = this.parentElement.querySelector('.error-msg');
+                if (msg) msg.classList.remove('visible');
+            });
+            el.addEventListener('change', function() {
+                this.classList.remove('error');
+                var msg = this.parentElement.querySelector('.error-msg');
+                if (msg) msg.classList.remove('visible');
+            });
+        });
+
         document.getElementById('checkin-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            clearErrors();
+
+            // Rate limit check
+            if (!checkRateLimit()) return;
 
             let data = {
-                timestamp: new Date().toLocaleString(),
+                timestamp: new Date().toISOString(),
                 type: selectedType,
                 site: 'ELP1'
             };
 
+            let hasError = false;
+
             if (selectedType === 'associate') {
-                data.login = document.getElementById('login').value;
-                data.name = document.getElementById('assoc-name').value;
-                data.manager = document.getElementById('manager').value;
-                data.reason = document.getElementById('reason').value;
+                const loginEl = document.getElementById('login');
+                const nameEl = document.getElementById('assoc-name');
+                const reasonEl = document.getElementById('reason');
 
-                if (!data.login || !data.name || !data.reason) {
-                    alert('Please fill in all required fields.');
-                    return;
+                const loginVal = sanitize(loginEl.value);
+                const nameVal = sanitize(nameEl.value);
+                const reasonVal = reasonEl.value;
+
+                if (!loginVal) { showFieldError(loginEl); hasError = true; }
+                else if (!isValidLogin(loginVal)) {
+                    showFieldError(loginEl);
+                    showToast('Login can only contain letters, numbers, dots, hyphens.', 'error');
+                    hasError = true;
                 }
+                if (!nameVal) { showFieldError(nameEl); hasError = true; }
+                if (!reasonVal) { showFieldError(reasonEl); hasError = true; }
+
+                if (hasError) return;
+
+                data.login = loginVal;
+                data.name = nameVal;
+                data.manager = sanitize(document.getElementById('manager').value);
+                data.reason = reasonVal;
             } else {
-                data.name = document.getElementById('visitor-name').value;
-                data.company = document.getElementById('company').value;
-                data.visiting = document.getElementById('visiting').value;
-                data.purpose = document.getElementById('purpose').value;
-                data.idType = document.getElementById('id-type').value;
+                const nameEl = document.getElementById('visitor-name');
+                const purposeEl = document.getElementById('purpose');
 
-                if (!data.name || !data.purpose) {
-                    alert('Please fill in all required fields.');
-                    return;
-                }
+                const nameVal = sanitize(nameEl.value);
+                const purposeVal = purposeEl.value;
+
+                if (!nameVal) { showFieldError(nameEl); hasError = true; }
+                if (!purposeVal) { showFieldError(purposeEl); hasError = true; }
+
+                if (hasError) return;
+
+                data.name = nameVal;
+                data.company = sanitize(document.getElementById('company').value);
+                data.visiting = sanitize(document.getElementById('visiting').value);
+                data.purpose = purposeVal;
+                data.idType = document.getElementById('id-type').value;
             }
 
+            // Update rate limit tracking
+            lastSubmitTime = Date.now();
+            submissionCount++;
+
             // Show loading
-            document.getElementById('checkin-form').style.display = 'none';
-            document.querySelector('.type-selector').style.display = 'none';
+            document.getElementById('form-wrapper').classList.remove('visible');
+            document.getElementById('type-selector').style.display = 'none';
             document.getElementById('loading').style.display = 'block';
+
+            // Check if offline - queue instead
+            if (!navigator.onLine) {
+                saveToOfflineQueue(data);
+                setTimeout(function() {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('success-msg').style.display = 'block';
+                    document.getElementById('success-detail').textContent =
+                        'Saved offline. Will sync when connection is restored.';
+                    launchConfetti();
+                }, 800);
+                return;
+            }
 
             // Send to Google Sheets
             fetch(GOOGLE_SCRIPT_URL, {
@@ -401,34 +1114,49 @@
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
-            })
-            .then(() => {
+            }).then(function() {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('success-msg').style.display = 'block';
                 document.getElementById('success-detail').textContent =
                     selectedType === 'associate'
                         ? 'Please see the security guard for a temporary badge.'
                         : 'Please wait for your escort. Security has been notified.';
-            })
-            .catch(() => {
+                launchConfetti();
+            }).catch(function() {
+                // Save to offline queue on failure
+                saveToOfflineQueue(data);
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('success-msg').style.display = 'block';
-                document.getElementById('success-detail').textContent = 'Check-in recorded. Please see security.';
+                document.getElementById('success-detail').textContent =
+                    'Saved locally. Will sync when connection is restored.';
+                launchConfetti();
             });
         });
 
         function resetForm() {
             document.getElementById('success-msg').style.display = 'none';
-            document.querySelector('.type-selector').style.display = 'flex';
-            document.getElementById('checkin-form').style.display = 'none';
+            document.getElementById('type-selector').style.display = 'flex';
+            document.getElementById('form-wrapper').classList.remove('visible');
             document.getElementById('checkin-form').reset();
             document.getElementById('associate-fields').style.display = 'none';
             document.getElementById('visitor-fields').style.display = 'none';
             document.getElementById('btn-associate').classList.remove('active');
             document.getElementById('btn-visitor').classList.remove('active');
+            clearErrors();
             selectedType = '';
+        }
+
+        // Auto-reset after 45 seconds on success screen (kiosk mode)
+        setInterval(function() {
+            if (document.getElementById('success-msg').style.display === 'block') {
+                resetForm();
+            }
+        }, 45000);
+
+        // Flush any queued submissions on load
+        if (navigator.onLine) {
+            flushOfflineQueue();
         }
     </script>
 </body>
 </html>
-
